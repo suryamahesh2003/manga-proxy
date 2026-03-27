@@ -6,14 +6,14 @@ const app = express();
 app.use(cors());
 
 app.get("/api/*", async (req, res) => {
-  const url = "https://api.mangadex.org/" + req.params[0];
+  const url = "https://api.mangadex.org" + req.originalUrl.replace("/api", "");
 
   try {
     const response = await fetch(url);
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed" });
+    res.status(500).json({ error: "Failed to fetch" });
   }
 });
 
