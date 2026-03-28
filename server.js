@@ -17,4 +17,17 @@ app.get("/api/*", async (req, res) => {
   }
 });
 
+// NEW: image proxy fix
+app.get("/chapter-img", async (req, res) => {
+  const imageUrl = req.query.url;
+
+  try {
+    const response = await fetch(imageUrl);
+    res.set("Content-Type", response.headers.get("content-type"));
+    response.body.pipe(res);
+  } catch (error) {
+    res.status(500).send("Image fetch failed");
+  }
+});
+
 app.listen(process.env.PORT || 3000);
