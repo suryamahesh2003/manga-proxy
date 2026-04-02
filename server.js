@@ -6,7 +6,7 @@ const app = express();
 
 app.use(cors());
 
-// ✅ Test routes
+// ✅ Test routes FIRST
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
@@ -15,7 +15,7 @@ app.get("/test", (req, res) => {
   res.send("Test route working");
 });
 
-// ✅ MangaDex proxy route
+// ✅ MangaDex proxy (VERY IMPORTANT: exact path)
 app.get("/api/*", async (req, res) => {
   const url = "https://api.mangadex.org" + req.originalUrl.replace("/api", "");
 
@@ -28,7 +28,12 @@ app.get("/api/*", async (req, res) => {
   }
 });
 
-// ✅ Start server
+// ✅ fallback route (IMPORTANT)
+app.use((req, res) => {
+  res.status(404).send("Route not found");
+});
+
+// ✅ start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
