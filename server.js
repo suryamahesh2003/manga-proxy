@@ -3,8 +3,19 @@ const cors = require("cors");
 const fetch = require("node-fetch");
 
 const app = express();
+
 app.use(cors());
 
+// ✅ Test routes
+app.get("/", (req, res) => {
+  res.send("Server is working");
+});
+
+app.get("/test", (req, res) => {
+  res.send("Test route working");
+});
+
+// ✅ MangaDex proxy route
 app.get("/api/*", async (req, res) => {
   const url = "https://api.mangadex.org" + req.originalUrl.replace("/api", "");
 
@@ -12,22 +23,13 @@ app.get("/api/*", async (req, res) => {
     const response = await fetch(url);
     const data = await response.json();
     res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch" });
+  } catch (err) {
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
-// NEW: image proxy fix
-app.get("/chapter-img", async (req, res) => {
-  const imageUrl = req.query.url;
-
-  try {
-    const response = await fetch(imageUrl);
-    res.set("Content-Type", response.headers.get("content-type"));
-    response.body.pipe(res);
-  } catch (error) {
-    res.status(500).send("Image fetch failed");
-  }
+// ✅ Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
 });
-
-app.listen(process.env.PORT || 3000);
